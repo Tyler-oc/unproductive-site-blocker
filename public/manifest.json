@@ -16,6 +16,11 @@
     "background": {
         "service_worker": "background.js"
     },
+    "action": {
+        "default_popup": "index.html?view=popup",
+        "default_title": "Open Productivity Dashboard"
+    },
+    "options_page": "index.html",
     "declarative_net_request": {
         "rule_resources": [
             {
@@ -29,6 +34,5 @@
         "16": "icon.png",
         "48": "icon.png",
         "128": "icon.png"
-    },
-    "options_page": "index.html"
+    }
 }

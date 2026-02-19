@@ -11,50 +11,17 @@ import {
 import { Bar } from 'react-chartjs-2'
 import './App.css'
 
+import { useViewMode } from './utils/useViewMode'
+import PopupView from './components/PopupView'
+import { todayStorageKey, formatTime, DEFAULT_SETTINGS } from './utils/shared'
+import type { Settings, DailyUsage } from './utils/shared'
+
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
-
-/* ─── Types ─── */
-
-interface DomainSettings {
-  dailyLimitMinutes: number
-}
-
-interface Settings {
-  restrictedDomains: Record<string, DomainSettings>
-}
-
-type DailyUsage = Record<string, number> // domain → seconds
-
-/* ─── Helpers ─── */
-
-function todayStorageKey(): string {
-  const d = new Date()
-  const yyyy = d.getFullYear()
-  const mm = String(d.getMonth() + 1).padStart(2, '0')
-  const dd = String(d.getDate()).padStart(2, '0')
-  return `usage_${yyyy}_${mm}_${dd}`
-}
-
-function formatTime(seconds: number): string {
-  if (seconds < 60) return `${seconds}s`
-  const m = Math.floor(seconds / 60)
-  const s = seconds % 60
-  if (m < 60) return `${m}m ${s}s`
-  const h = Math.floor(m / 60)
-  return `${h}h ${m % 60}m`
-}
-
-const DEFAULT_SETTINGS: Settings = {
-  restrictedDomains: {
-    'youtube.com': { dailyLimitMinutes: 30 },
-    'instagram.com': { dailyLimitMinutes: 15 },
-    'reddit.com': { dailyLimitMinutes: 20 },
-  },
-}
 
 /* ─── Component ─── */
 
 function App() {
+  const viewMode = useViewMode()
   const [settings, setSettings] = useState<Settings>(DEFAULT_SETTINGS)
   const [usage, setUsage] = useState<DailyUsage>({})
   const [newDomain, setNewDomain] = useState('')
@@ -66,13 +33,21 @@ function App() {
 
   const loadData = useCallback(async () => {
     try {
-      // Load settings from sync storage
+      // 1. Load settings from sync storage
       const syncData = await chrome.storage.sync.get('settings')
-      if (syncData.settings) {
+      
+      if (syncData.settings && Object.keys(syncData.settings).length > 0) {
+        // Normal case: We have saved settings
         setSettings(syncData.settings as Settings)
+      } else {
+        // INITIALIZATION FIX: Storage is empty! 
+        // Force the DEFAULT_SETTINGS into chrome.storage so the background script sees them.
+        await chrome.storage.sync.set({ settings: DEFAULT_SETTINGS })
+        setSettings(DEFAULT_SETTINGS)
+        console.log('[Dashboard] Initialized storage with default settings.')
       }
 
-      // Load today's usage from local storage
+      // 2. Load today's usage from local storage
       const key = todayStorageKey()
       const localData = await chrome.storage.local.get(key)
       if (localData[key]) {
@@ -163,16 +138,16 @@ function App() {
       {
         label: 'Time Spent',
         data: usageSeconds.map((s) => Math.round(s / 60)),
-        backgroundColor: 'rgba(130, 110, 255, 0.6)',
-        borderColor: 'rgba(130, 110, 255, 1)',
+        backgroundColor: 'rgba(129, 140, 248, 0.8)', // Uses the var(--accent-primary)
+        borderColor: 'rgba(129, 140, 248, 1)',
         borderWidth: 1,
         borderRadius: 6,
       },
       {
         label: 'Daily Limit',
         data: limitSeconds.map((s) => Math.round(s / 60)),
-        backgroundColor: 'rgba(255, 107, 107, 0.15)',
-        borderColor: 'rgba(255, 107, 107, 0.5)',
+        backgroundColor: 'rgba(46, 50, 59, 0.6)', // Uses a subtle elevated background
+        borderColor: 'rgba(148, 163, 184, 0.5)',
         borderWidth: 1,
         borderRadius: 6,
         borderDash: [5, 5],
@@ -222,6 +197,8 @@ function App() {
   ).length
 
   /* ── Render ── */
+
+  if (viewMode === 'popup') return <PopupView />
 
   return (
     <div className="dashboard">
