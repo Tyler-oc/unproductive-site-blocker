@@ -1,0 +1,33 @@
+{
+    "manifest_version": 3,
+    "name": "Unproductive Site Blocker",
+    "version": "1.0.0",
+    "description": "Blocks unproductive sites, tracks active time, and prevents incognito usage.",
+    "permissions": [
+        "declarativeNetRequest",
+        "storage",
+        "tabs",
+        "windows",
+        "alarms"
+    ],
+    "host_permissions": [
+        "<all_urls>"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "declarative_net_request": {
+        "rule_resources": [
+            {
+                "id": "static_block_rules",
+                "enabled": true,
+                "path": "rules.json"
+            }
+        ]
+    },
+    "icons": {
+        "16": "public/icon.png",
+        "48": "public/icon.png",
+        "128": "public/icon.png"
+    }
+}
