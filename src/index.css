@@ -1,0 +1,76 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+/* ── Design Tokens ── */
+:root {
+  --bg-primary: #0f0f1a;
+  --bg-secondary: #161625;
+  --bg-card: rgba(30, 30, 52, 0.7);
+  --bg-card-hover: rgba(40, 40, 65, 0.8);
+  --border-card: rgba(100, 100, 180, 0.15);
+  --border-input: rgba(100, 100, 180, 0.25);
+  --border-input-focus: rgba(130, 110, 255, 0.6);
+
+  --text-primary: #e8e8f0;
+  --text-secondary: #9898b0;
+  --text-muted: #6a6a85;
+
+  --accent: #826eff;
+  --accent-light: #a18aff;
+  --accent-glow: rgba(130, 110, 255, 0.2);
+  --accent-gradient: linear-gradient(135deg, #826eff, #5b8cff);
+
+  --danger: #ff6b6b;
+  --danger-hover: #ff4f4f;
+  --success: #4ecb71;
+
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+
+  --shadow-card: 0 4px 24px rgba(0, 0, 0, 0.3);
+  --shadow-glow: 0 0 20px var(--accent-glow);
+
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+}
+
+/* ── Reset ── */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--text-muted);
+  border-radius: 3px;
+}
+
+/* ── Selection ── */
+::selection {
+  background: var(--accent);
+  color: #fff;
+}
